@@ -22,6 +22,7 @@ class Vector {
     void del (const int);
     void remove (const T);
     int find (const T);
+    void printVec ();
 };
 
 // #endif

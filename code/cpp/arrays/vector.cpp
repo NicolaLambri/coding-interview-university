@@ -1,11 +1,16 @@
 #include "vector.h"
+#include <cmath>
+#include <iostream>
 
 template <class T>
-Vector<T>::Vector (const int cap) : capacity(cap), size(0) {
+Vector<T>::Vector (const int cap) : size(0) {
+    // capacity = power of 2
+    capacity = pow(2, round(log2(cap)));
     vec = new T [capacity]; // dinamic memory allocation    
 }
 template <class T>
 Vector<T>::Vector () : capacity(16), size(0) {
+    // default capacity 16
     vec = new T [capacity];
 }
 template <class T>
@@ -57,7 +62,7 @@ void Vector<T>::insert (const int i, const T value) {
     if (size == capacity) {
         resize (2 * capacity) ;
     }
-    for (int j = size - 1; j > i; --j) {
+    for (int j = size; j > i; --j) {
         vec[j] = vec[j - 1];
     }
     vec[i] = value;
@@ -107,6 +112,18 @@ int Vector<T>::find (const T value) {
         }
     }
     return -1;
+}
+template <class T>
+void Vector<T>::printVec () {
+    std::cout << "[ ";
+    for (int i = 0; i < size; ++i) {
+        // just to use pointers
+        std::cout << *(vec + i);
+        if (i != size - 1) {
+            std::cout << ", ";
+        }
+    }
+    std::cout << "]" << std::endl;
 }
 
 // Vector can only be used with int or double
