@@ -18,6 +18,7 @@ class SList {
     SListNode<T> * head; // head of the list
     public:
     SList ();
+    ~SList ();
     int Size ();
     bool Empty ();
     T Value_at (const int&);

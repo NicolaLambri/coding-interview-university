@@ -9,6 +9,16 @@ SListNode<T>::SListNode (const T& element, SListNode<T> * node) : item(element),
 template <class T>
 SList<T>::SList () : size(0), head(nullptr) {} // empty list
 template <class T>
+SList<T>::~SList () {
+    SListNode<T> * pNode = head, * pTemp;
+    while (pNode->next != nullptr) {
+        pTemp = pNode;
+        pNode = pNode->next; 
+        delete pTemp;
+    }
+    std::cout << "List deleted." << std::endl;
+}
+template <class T>
 int SList<T>::Size () {
     return size;
 }
@@ -35,12 +45,13 @@ T SList<T>::Value_at (const int& position) {
     }
     return pNode->item;
 }
+/* This is problematic for deallocating memory since SListNode should be allocated with new
 template <class T>
 void SList<T>::Push_front (SListNode<T>& node) {
     node.next = head; // make the new node point to the (old) first item of the list
     head = &node; // head now points to the new first item
     size++;
-}
+}*/
 template <class T>
 SList<T>& SList<T>::Push_front (const T& element) {
     SListNode<T> * pNode = new SListNode<T> (element);
@@ -55,11 +66,15 @@ T SList<T>::Pop_front () {
         std::cout << "Empty list." << std::endl;
         return -1;
     }
+    // need pointer to head of the list to delete node
+    SListNode<T> * pNode = head;
     T item = head->item; // assign removed item
     head = head->next; // redirect head
+    delete pNode; // delete memory pointend by pNode (old head)
     size--;
     return item;
 }
+/* This can be problematic in deallocating memory if node is not created dynamically in main
 template <class T>
 void SList<T>::Push_back (SListNode<T>& node) {
     if (head == nullptr) {
@@ -73,7 +88,7 @@ void SList<T>::Push_back (SListNode<T>& node) {
     }
     pNode->next = &node;
     size++;
-}
+}*/
 template <class T>
 SList<T>& SList<T>::Push_back (const T& element) {
     if (head == nullptr) return this->Push_front (element);
@@ -100,6 +115,7 @@ T SList<T>::Pop_back () {
     }
     // save item to return
     T element = pNode->next->item;
+    delete pNode->next; // free memory pointed by pNode->next
     pNode->next = nullptr;
     size--;
     return element;
@@ -147,7 +163,7 @@ void SList<T>::Insert (const int& position, const T& element) {
 template <class T>
 void SList<T>::Erase (const int& position) {
     // position starts from 1
-    if (this->Empty ()) {
+    if (head == nullptr) {
         std::cout << "Empty list, nothing to erase." << std::endl;
         return;
     } 
@@ -163,11 +179,15 @@ void SList<T>::Erase (const int& position) {
         this->Pop_back ();
         return;
     }
+    // pNode points to the head of the list
     SListNode<T> * pNode = head;
     for (int j = 2; j < position; ++j) {
         pNode = pNode->next;
     }
+    // tempnode to deallocate note
+    SListNode<T> * tempNode = pNode->next;
     pNode->next = pNode->next->next;
+    delete tempNode;
 }
 template <class T>
 void SList<T>::Print () {
@@ -190,7 +210,7 @@ T SList<T>::Value_from_end (const int& pos) {
 }
 template <class T>
 void SList<T>::Reverse () {
-    if (this->Empty()) {
+    if (head == nullptr) {
         std::cout << "Empty list!" << std::endl;
         return;
     } 
@@ -216,21 +236,20 @@ void SList<T>::Reverse () {
 }
 template <class T>
 void SList<T>::Remove_value (const T& value) {
-    if (this->Empty()) {
+    if (head == nullptr) {
         std::cout << "Empty list." << std::endl;
         return;
     }
-    // check if value is in the first node
-    if (head->item == value) {
-        head = head->next;
-        return;
+    // use pointer to pointer initialized to point at the memory address of head
+    // with this structure there is no need to check if value is the head
+    for (SListNode<T> ** ppNode = &head; *ppNode != nullptr; ppNode = &(*ppNode)->next) {
+        if ((*ppNode)->item == value) {
+            SListNode<T> * tempNode = *ppNode;
+            *ppNode = (*ppNode)->next;
+            delete tempNode;
+            break;
+        } 
     }
-    SListNode<T> * pNode = head;
-    for (int j = 1; j < size; ++j) {
-        if (pNode->next->item == value) {
-            pNode->next = pNode->next->next;
-            return;
-        }
-        pNode = pNode->next;
-    }
+
+    std::cout << "Value not in list" << std::endl;
 }
