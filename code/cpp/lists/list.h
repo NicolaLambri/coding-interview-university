@@ -22,7 +22,18 @@ class SList {
     bool Empty ();
     T Value_at (const int&);
     void Push_front (SListNode<T>&);
+    // overload to insert new node using only item
+    SList<T>& Push_front (const T&);
     T Pop_front ();
     void Push_back (SListNode<T>&);
+    SList<T>& Push_back (const T&);
     T Pop_back ();
+    T Front ();
+    T Back ();
+    void Insert (const int&, const T&);
+    void Erase (const int&);
+    void Print ();
+    T Value_from_end (const int&);
+    void Reverse ();
+    void Remove_value (const T&);
 };
