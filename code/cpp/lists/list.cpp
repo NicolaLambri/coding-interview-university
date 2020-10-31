@@ -92,14 +92,13 @@ void SList<T>::Push_back (SListNode<T>& node) {
 template <class T>
 SList<T>& SList<T>::Push_back (const T& element) {
     if (head == nullptr) return this->Push_front (element);
-    SListNode<T> * pNode = new SListNode<T> (element);
-    pNode->next = head;
-    // continue until pNode points to the last node
-    while (pNode->next->next != nullptr) {
-        pNode->next = pNode->next->next; 
+    SListNode<T> * tempNode = head;
+    // get to the last node
+    while (tempNode->next != nullptr) {
+        tempNode = tempNode->next;
     }
-    pNode->next->next = pNode;
-    pNode->next = nullptr;
+    SListNode<T> * pNode = new SListNode<T> (element);
+    tempNode->next = pNode;
     size++;
     return *this;
 }
@@ -137,27 +136,19 @@ T SList<T>::Back () {
 template <class T>
 void SList<T>::Insert (const int& position, const T& element) {
     // index starts from 1 
-    if (position == size) {
-        this->Push_back (element);
-        return;
-    }
-    if (position == 1) {
-        this->Push_front (element);
-        return;
-    }
     if (position < 1 || position > size) { 
         std::cout << "Position out of bounds." << std::endl;
         return;
     }
-    SListNode<T> * pNode = new SListNode<T> (element);
-    pNode->next = head;
-    for (int j = 2; j < position; ++j) {
-        pNode = pNode->next;
+    // ppNode is a pointer to a pointer (to head pointer)
+    SListNode<T> ** ppNode = &head;
+    // move ppNode to point the node pointer after which we insert
+    for (int j = 1; j < position; ++j) {
+        ppNode = &(*ppNode)->next;
     }
-    // new node points to the next node
-    pNode->next = pNode->next->next;
-    // previous node points to the new node
-    pNode->next->next = pNode; 
+    SListNode<T> * pNode = new SListNode<T> (element);
+    pNode->next = *ppNode;
+    *ppNode = pNode;
     size++;
 }
 template <class T>
@@ -171,22 +162,14 @@ void SList<T>::Erase (const int& position) {
         std::cout << "Position out of bounds." << std::endl;
         return;
     }
-    if (position == 1) {
-        this->Pop_front ();
-        return;
+    SListNode<T> ** ppNode = &head;
+    SListNode<T> * tempNode;
+    for (int j = 1; j < position; ++j) {
+        ppNode = &(*ppNode)->next;
     }
-    if (position == size) {
-        this->Pop_back ();
-        return;
-    }
-    // pNode points to the head of the list
-    SListNode<T> * pNode = head;
-    for (int j = 2; j < position; ++j) {
-        pNode = pNode->next;
-    }
-    // tempnode to deallocate note
-    SListNode<T> * tempNode = pNode->next;
-    pNode->next = pNode->next->next;
+    tempNode = *ppNode;
+    *ppNode = (*ppNode)->next;
+    size--;
     delete tempNode;
 }
 template <class T>
@@ -210,15 +193,23 @@ T SList<T>::Value_from_end (const int& pos) {
 }
 template <class T>
 void SList<T>::Reverse () {
-    if (head == nullptr) {
-        std::cout << "Empty list!" << std::endl;
-        return;
-    } 
+    SListNode<T> * pCurr = head;
+    SListNode<T> * pNext = nullptr, * pPrev = nullptr;
+    // O(n)
+    while (pCurr != nullptr) {
+        pNext = pCurr->next;
+        pCurr->next = pPrev;
+        pPrev = pCurr;
+        pCurr = pNext;
+    }
+    head = pPrev; // since pCurr is assigned to nullptr at the end
+    /*
     if (size == 1) return;
     // define poiter to node to reverse the list
     SListNode<T> * pNode;
     // save address of new head
     SListNode<T> * newhead;
+    NOT OPTIMAL: requires retraversing the list for each node O(n!)
     for (int i = 1; i < size; ++i) {
         pNode = head;
         // make pNode point to the second-last node
@@ -232,7 +223,7 @@ void SList<T>::Reverse () {
         // second-last node points to nullptr
         pNode->next = nullptr;
     }
-    head = newhead;
+    head = newhead;*/
 }
 template <class T>
 void SList<T>::Remove_value (const T& value) {
@@ -250,6 +241,5 @@ void SList<T>::Remove_value (const T& value) {
             break;
         } 
     }
-
     std::cout << "Value not in list" << std::endl;
 }

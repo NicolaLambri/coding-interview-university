@@ -26,6 +26,8 @@ int main () {
     l1->Push_back (5);
     l1->Push_back (78);
     l1->Push_back (100);
+    l1->Insert(3, 34);
+    l1->Insert(7, 1);
     std::cout << "SList: "; l1->Print ();
     l1->Reverse ();
     std::cout << "Reversed SList: "; l1->Print ();
