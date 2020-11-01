@@ -75,15 +75,13 @@ void QueueArray<T>::Enqueue (const T& item) {
         std::cout << "Queue is full, cannot allocate new item" << std::endl;
     }
     queue[write] = item;
-    if (write == size - 1) write = 0;
-    else write++;
+    write = ++write % size; // mod size so that write cycles
 }
 template <class T>
 T QueueArray<T>::Dequeue () {
     if (this->Empty()) std::cout << "Empty list, nothing to dequeue." << std::endl;
     T item = queue[read];
-    if (read == size - 1) read = 0;
-    else read++;
+    read = ++read % size;
     return item;
 }
 template <class T>
