@@ -209,7 +209,7 @@ void SList<T>::Reverse () {
     SListNode<T> * pNode;
     // save address of new head
     SListNode<T> * newhead;
-    NOT OPTIMAL: requires retraversing the list for each node O(n!)
+    NOT OPTIMAL: requires retraversing the list for each node O(n^2)
     for (int i = 1; i < size; ++i) {
         pNode = head;
         // make pNode point to the second-last node
