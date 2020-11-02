@@ -47,7 +47,10 @@ void Vector<T>::push (const T value) {
 template <class T>
 void Vector<T>::resize (const int new_cap) {
     T * new_vec = new T [new_cap]; // resize array 
-    for (int i = 0; i < capacity; ++i) {
+    int len
+    if (new_cap > capacity) len = capacity; 
+    else len = new_cap;
+    for (int i = 0; i < len; ++i) {
         new_vec [i] = vec[i];
     }
     delete[] vec; // free array of memory pointed by vec
