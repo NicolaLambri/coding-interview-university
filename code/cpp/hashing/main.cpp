@@ -16,4 +16,6 @@ int main () {
     for (int i = 0; i < 22; ++i) {
         ht->remove (i);
     }
+    // inserting in a hash table while iterating over the items
+    // can be dangerous since the table could resize
 }
