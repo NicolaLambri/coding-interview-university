@@ -64,21 +64,80 @@ bool is_in_tree (BstNode<T> * const &pNode, const T &v) {
     else if (v > pNode->value)
         return is_in_tree (pNode->right, v);
     return true;
-        
+}
+
+int max (int &a, int &b) {
+    return a >= b ? a : b;
 }
 
 template <class T>
+int height (BstNode<T> * &pNode) { // O(n) we have to visit each node...
+    if (pNode == nullptr)
+        return -1; // if tree's height is counted with number of edges
+        // return 0; if tree's height is counted with number of nodes
+    int hleft = 0, hright = 0;
+    hleft += height (pNode->left);
+    hright += height (pNode->right);
+    return max (hleft, hright) + 1;
+    // even more compact:
+    // return max (height (pNode->left), height(pNode->right)) + 1;
+}
+
+// iterative implementation
+template <class T>
 T get_min (BstNode<T> * pNode) {
+    if (pNode == nullptr)
+        return -1;
     while (pNode->left != nullptr)
         pNode = pNode->left;
     return pNode->value;
 }
+/* recursive implementation
+template <class T>
+T get_min (BstNode<T> * &pNode) {
+    if (pNode == nullptr)
+        return -1;
+    else if (pNode->left == nullptr)
+        return pNode->value;
+    // search in left subtree
+    return get_min (pNode->left); 
+}
+*/
 
 template <class T>
 T get_max (BstNode<T> * pNode) {
+    if (pNode == nullptr)
+        return -1;
     while (pNode->right != nullptr)
         pNode = pNode->right;
     return pNode->value;
+}
+
+// check whether tree is a BST
+template <class T>
+bool is_Bst (BstNode<T> * &pNode) {
+    bool check_bst = true;
+    if (pNode->left != nullptr) {
+        // check left subtree
+        check_bst = is_Bst (pNode->left);
+        if (pNode->value < pNode->left->value)
+            check_bst = false;
+    }
+    // if tree is not a BST that continue to return
+    if (check_bst == false)
+        return check_bst;
+    if (pNode->right != nullptr) {
+        // check right subtree (in case left subtree is a BST)
+        check_bst = is_Bst (pNode->right);
+        if (pNode->value >= pNode->right->value)
+            check_bst = false;
+    }
+    return check_bst;
+}
+
+template <class T>
+void delete_value (BstNode<T> * &pNode, T &v) {
+    
 }
 
 // return the next-highest value in tree after given value
@@ -128,6 +187,8 @@ int main () {
     std::cout << "Max value in the tree: " << get_max (root) << std::endl;
     std::cout << "Insert value: "; std::cin >> value;
     std::cout << "Next-highest to the value in the tree is: " << next_highest (root, value) << std::endl;
+    std::cout << "Is it a BST? " << is_Bst (root) << std::endl;
+    std::cout << "Tree's height: " << height (root) << std::endl;
     delete_tree (root);
     std::cout << "Tree deleted." << std::endl;
 }
