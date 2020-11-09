@@ -91,10 +91,9 @@ int max (int &a, int &b) {
 }
 
 template <class T>
-int height (BstNode<T> * &pNode) { // O(n) we have to visit each node...
+int height (BstNode<T> * &pNode) { // O(n) we have to visit each node
     if (pNode == nullptr)
-        return -1; // if tree's height is counted with number of edges
-        // return 0; if tree's height is counted with number of nodes
+        return -1; // leaves' height is zero 
     int hleft = 0, hright = 0;
     hleft += height (pNode->left);
     hright += height (pNode->right);
