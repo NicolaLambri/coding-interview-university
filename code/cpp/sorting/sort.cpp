@@ -48,24 +48,82 @@ void insertionsort(T* arr, int len) {
 }
 
 template <class T>
-T* merge(T* arr1, int len1, T* arr2, int len2) {
-    T* merged = new T[len1 + len2];
-    int i = 0, j = 0, k = 0;
+void merge(const T* arr1, int len1, const T* arr2, int len2, T* merged) {
+    int i, j, k;
+    i = j = k = 0;
     while (i < len1 && j < len2) {
-        if (arr1[i] <= arr2[j])
+        /* this can be unsafe as j could refer to past the last item of arr2
+        if ((arr1[i] < arr2[j] && i < len1) || j >= len2)
+            merged[k++] = arr1[i++];
+        else
+            merged[k++] = arr2[j++];*/
+        if (arr1[i] < arr2[j])
             merged[k++] = arr1[i++];
         else
             merged[k++] = arr2[j++];
     }
-    if (i == len1) {
-        for (int l = j; l < len2; ++l)
-            merged[k++] = arr2[l];
+    while (i < len1) merged[k++] = arr1[i++];
+    while (j < len2) merged[k++] = arr2[j++];
+}
+
+template <class T>
+void mergesort(T* arr, int len, T* merged) {
+    // sorting NOT in-place
+    // O(n) space complexity
+    if (len < 2) {
+        T* it; int i;
+        for (it = arr, i = 0; it < arr + len; ++it, ++i)
+            merged[i] = *it;
+        return;
     }
-    else {
-        for (int l = i; l < len1; ++l)
-            merged[k++] = arr1[l];
+    int len1 = len / 2, len2 = ceil(len / 2);
+    T* merged1 = new T [len1];
+    mergesort(arr, len1, merged1);
+
+    T* merged2 = new T [len2];
+    mergesort(arr + len1, len2, merged2);
+
+    merge(merged1, len1, merged2, len2, merged);
+
+    delete[] merged1;
+    delete[] merged2;
+}
+
+template <class T>
+void in_place_merge(T arr[], int low, int mid, int high) {
+    T temp[high - low + 1];
+    int i = low, j = mid + 1, k = 0;
+    // order items in temp
+    while (i <= mid && j <= high) {
+        if (arr[i] < arr[j])
+            temp[k++] = arr[i++];
+        else
+            temp[k++] = arr[j++];
     }
-    return merged;
+
+    while (i <= mid) temp[k++] = arr[i++];
+    while (j <= high) temp[k++] = arr[j++];
+
+    --k; // set k value to last index of temp
+    // copy ordered items from temp to arr
+    while (k >= 0) {
+        arr[low + k] = temp[k];
+        --k;
+    }
+}
+
+template <class T>
+// T arr[]: syntactic sugar for T* arr
+void in_place_mergesort(T arr[], int low, int high) {
+    // O(n) space complexity (more efficient than not-in-place by a factor of 2)
+    if (low >= high)
+        return;
+
+    int mid = (high + low) / 2;
+    in_place_mergesort(arr, low, mid);
+    in_place_mergesort(arr, mid + 1, high);
+
+    in_place_merge(arr, low, mid, high);
 }
 
 int main () {
@@ -81,13 +139,13 @@ int main () {
     std::cout << "Insertion Sort: " << std::endl;
     for (auto item : arr) std::cout << item << " ";
     std::cout << std::endl;*/
-    /*int* sorted = mergesort(arr, 0, 15);
-    std::cout << "Mergesort: " << std::endl;
-    for (int i = 0; i < 15; ++i) std::cout << *(sorted + i) << " ";
-    std::cout << std::endl;*/
-    int arr1[] = {1,3,5,8};
-    int arr2[] = {3,4,9,10,12,16,18};
-    int* s = merge(arr1, 4, arr2, 7);
-    for (int i = 0; i < 11; ++i) std::cout << s[i] << " ";
+    int sorted[16];
+    mergesort(arr, 16, sorted);
+    std::cout << "Mergesort: ";
+    for (int i = 0; i < 16; ++i) std::cout << sorted[i] << " ";
+    std::cout << std::endl;
+    std::cout << "In-place mergesort: ";
+    in_place_mergesort(arr, 0, 15);
+    for (int i = 0; i < 16; ++i) std::cout << arr[i] << " ";
     std::cout << std::endl;
 }
