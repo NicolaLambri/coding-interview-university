@@ -4,7 +4,7 @@
 #include <cmath>
 
 template <class T>
-void swap(T &a, T&b) {
+void swap(T &a, T &b) {
     auto temp = a;
     a = b;
     b = temp;
@@ -31,7 +31,7 @@ void quicksort(T* arr, int low, int high) {
 }
 
 template <class T>
-void insertionsort(T* arr, int len) {
+void insertionsort(T* arr, const int len) {
     for (int i = 1; i < len; ++i) { // O(n)
         for (int j = i - 1; j >= 0; --j) {
             // O(n) move to the right all the elements that are greater than the new value
