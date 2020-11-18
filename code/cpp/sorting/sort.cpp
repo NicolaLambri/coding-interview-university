@@ -91,6 +91,10 @@ void mergesort(T* arr, int len, T* merged) {
 
 template <class T>
 void in_place_merge(T arr[], int low, int mid, int high) {
+    // this could be optimized: first copy arr[] in temp[]
+    // then put the ordered elements back in arr[],
+    // when we exhaust a subarray we stop since that
+    // remaining elements are already in order in arr[]
     T temp[high - low + 1];
     int i = low, j = mid + 1, k = 0;
     // order items in temp
@@ -122,6 +126,9 @@ void in_place_mergesort(T arr[], int low, int high) {
     int mid = (high + low) / 2;
     in_place_mergesort(arr, low, mid);
     in_place_mergesort(arr, mid + 1, high);
+    // if last element of first subarr is less than
+    // first element of second subarr we don't need to merge
+    if (arr[mid] <= arr[mid + 1]) return;
 
     in_place_merge(arr, low, mid, high);
 }
